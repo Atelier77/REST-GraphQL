@@ -1,16 +1,12 @@
-// types.ts
-console.log("🟢 СКРИПТ ЗАПУЩЕН");
+console.log("СКРИПТ ЗАПУЩЕН");
 export interface User { id: string; name: string; email: string }
 export interface Task { id: string; title: string; description: string; user_id: string }
 
-// REST клиент (2 запроса)
 export async function fetchUserWithTasksREST(userId: string): Promise<{ user: User; tasks: Task[] }> {
-  // 1️⃣ Запрос пользователя
   const userRes = await fetch(`http://localhost:8000/users/${userId}`);
   if (!userRes.ok) throw new Error("User not found");
   const user: User = await userRes.json();
 
-  // 2️⃣ Запрос всех задач и фильтрация на клиенте
   const tasksRes = await fetch(`http://localhost:8000/tasks`);
   const allTasks: Task[] = await tasksRes.json();
   const userTasks = allTasks.filter(t => t.user_id === userId);
@@ -18,7 +14,6 @@ export async function fetchUserWithTasksREST(userId: string): Promise<{ user: Us
   return { user, tasks: userTasks };
 }
 
-// GraphQL клиент (1 запрос)
 export async function fetchUserWithTasksGraphQL(userId: string): Promise<{ user: User; tasks: Task[] }> {
   const query = `
     query GetUserWithTasks($id: ID!) {
